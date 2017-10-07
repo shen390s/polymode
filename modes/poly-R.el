@@ -272,7 +272,7 @@
   (pm-shell-exporter "Rmarkdown"
                      :from
                      '(("Rmarkdown"  "\\.[rR]?md\\|rapport\\'" "R Markdown"
-                        "Rscript -e \"rmarkdown::render('%i', output_format = '%t', output_file = '%o')\""))
+                        "Rscript -e \"rmarkdown::render('%i', output_format = '%t', output_file = '%o',encoding='UTF-8')\""))
                      :to
                      '(("auto" . pm--rmarkdown-shell-auto-selector)
                        ("html" "html" "html document" "html_document")
@@ -281,7 +281,10 @@
                        ("md" "md" "md document" "md_document")
                        ("ioslides" "html" "ioslides presentation" "ioslides_presentation")
                        ("slidy" "html" "slidy presentation" "slidy_presentation")
-                       ("beamer" "pdf" "beamer presentation" "beamer_presentation")))
+                       ("beamer" "pdf" "beamer presentation" "beamer_presentation")
+                       ("tufte handout pdf" "pdf" "pdf with tufte handout" "tufte::tufte_handout")
+                       ("tufte book pdf" "pdf" "tufte book in PDF" "tufte::tufte_book")
+                       ("tufte handout html" "html" "html with tufte handout"  "tufte::tufte_html")))
   "R Markdown exporter.
 Please not that with 'AUTO DETECT' export options, output file
 names are inferred by Rmarkdown from YAML description
@@ -296,7 +299,7 @@ block. Thus, output file names don't comply with
 (defun pm--rmarkdown-shell-auto-selector (action &rest ignore)
   (cl-case action
     (doc "AUTO DETECT")
-    (command "Rscript -e \"rmarkdown::render('%i', output_format = 'all')\"")
+    (command "Rscript -e \"rmarkdown::render('%i', output_format = 'all', encoding='UTF-8')\"")
     (output-file #'pm--rmarkdown-output-file-sniffer)))
 
 (defcustom pm-exporter/Rmarkdown-ESS
@@ -312,7 +315,10 @@ block. Thus, output file names don't comply with
                           ("md" "md" "md document" "md_document")
                           ("ioslides" "html" "ioslides presentation" "ioslides_presentation")
                           ("slidy" "html" "slidy presentation" "slidy_presentation")
-                          ("beamer" "pdf" "beamer presentation" "beamer_presentation"))
+                          ("beamer" "pdf" "beamer presentation" "beamer_presentation")
+                          ("tufte handout pdf" "pdf" "pdf with tufte handout" "tufte::tufte_handout")
+                          ("tufte book pdf" "pdf" "tufte book in PDF" "tufte::tufte_book")
+                          ("tufte handout html" "html" "html with tufte handout"  "tufte::tufte_html"))
                         :function 'pm--ess-run-command
                         :callback 'pm--ess-callback)
   "R Markdown exporter.
@@ -345,13 +351,13 @@ block. Thus, output file names don't comply with
 (defcustom pm-weaver/knitR
   (pm-shell-weaver "knitr"
                    :from-to
-                   '(("latex" "\\.\\(tex\\|[rR]nw\\)\\'" "tex" "LaTeX" "Rscript -e \"knitr::knit('%i', output='%o')\"")
-                     ("html" "\\.x?html?\\'" "html" "HTML" "Rscript -e \"knitr::knit('%i', output='%o')\"")
+                   '(("latex" "\\.\\(tex\\|[rR]nw\\)\\'" "tex" "LaTeX" "Rscript -e \"knitr::knit('%i', output='%o',encoding='UTF-8')\"")
+                     ("html" "\\.x?html?\\'" "html" "HTML" "Rscript -e \"knitr::knit('%i', output='%o',encoding='UTF-8')\"")
                      ("markdown" "\\.[rR]?md]\\'" "md" "Markdown" "Rscript -e \"knitr::knit('%i', output='%o')\"")
-                     ("rst" "\\.rst" "rst" "ReStructuredText" "Rscript -e \"knitr::knit('%i', output='%o')\"")
-                     ("brew" "\\.[rR]?brew\\'" "brew" "Brew" "Rscript -e \"knitr::knit('%i', output='%o')\"")
-                     ("asciidoc" "\\.asciidoc\\'" "txt" "AsciiDoc" "Rscript -e \"knitr::knit('%i', output='%o')\"")
-                     ("textile" "\\.textile\\'" "textile" "Textile" "Rscript -e \"knitr::knit('%i', output='%o')\"")))
+                     ("rst" "\\.rst" "rst" "ReStructuredText" "Rscript -e \"knitr::knit('%i', output='%o', encoding='UTF-8')\"")
+                     ("brew" "\\.[rR]?brew\\'" "brew" "Brew" "Rscript -e \"knitr::knit('%i', output='%o', encoding='UTF-8')\"")
+                     ("asciidoc" "\\.asciidoc\\'" "txt" "AsciiDoc" "Rscript -e \"knitr::knit('%i', output='%o', encoding='UTF-8')\"")
+                     ("textile" "\\.textile\\'" "textile" "Textile" "Rscript -e \"knitr::knit('%i', output='%o', encoding='UTF-8')\"")))
   "Shell knitR weaver."
   :group 'polymode-weave
   :type 'object)
@@ -363,13 +369,13 @@ block. Thus, output file names don't comply with
 (defcustom pm-weaver/knitR-ESS
   (pm-callback-weaver "knitR-ESS"
                       :from-to
-                      '(("latex" "\\.\\(tex\\|rnw\\)\\'" "tex" "LaTeX" "knitr::knit('%I', output='%O')")
-                        ("html" "\\.x?html?\\'" "html" "HTML" "knitr::knit('%I', output='%O')")
-                        ("markdown" "\\.r?md\\'" "md" "Markdown" "knitr::knit('%I', output='%O')")
-                        ("rst" "\\.rst\\'" "rst" "ReStructuredText" "knitr::knit('%I', output='%O')")
-                        ("brew" "\\.r?brew\\'" "brew" "Brew" "knitr::knit('%I', output='%O')")
-                        ("asciidoc" "\\.asciidoc\\'" "txt" "AsciiDoc" "knitr::knit('%I', output='%O')")
-                        ("textile" "\\.textile\\'" "textile" "Textile" "knitr::knit('%I', output='%O')"))
+                      '(("latex" "\\.\\(tex\\|rnw\\)\\'" "tex" "LaTeX" "knitr::knit('%I', output='%O', encoding='UTF-8')")
+                        ("html" "\\.x?html?\\'" "html" "HTML" "knitr::knit('%I', output='%O', encoding='UTF-8')")
+                        ("markdown" "\\.r?md\\'" "md" "Markdown" "knitr::knit('%I', output='%O', encoding='UTF-8')")
+                        ("rst" "\\.rst\\'" "rst" "ReStructuredText" "knitr::knit('%I', output='%O', encoding='UTF-8')")
+                        ("brew" "\\.r?brew\\'" "brew" "Brew" "knitr::knit('%I', output='%O', encoding='UTF-8')")
+                        ("asciidoc" "\\.asciidoc\\'" "txt" "AsciiDoc" "knitr::knit('%I', output='%O',encoding='UTF-8')")
+                        ("textile" "\\.textile\\'" "textile" "Textile" "knitr::knit('%I', output='%O',encoding='UTF-8')"))
                       :function 'pm--ess-run-command
                       :callback 'pm--ess-callback)
   "ESS knitR weaver."
@@ -430,6 +436,7 @@ block. Thus, output file names don't comply with
       (setq string (concat (buffer-substring (or ess--tb-last-input (comint-previous-prompt)) (point-max))
                            string)))
     (with-temp-buffer
+      (message string)
       (insert string)
       (when (string-match-p "Error\\(:\\| +in\\)" string)
         (error "Errors durring ESS async command"))

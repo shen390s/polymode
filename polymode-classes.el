@@ -13,25 +13,24 @@
     place key value pairs into this list."))
         "Root polymode class.")
 
-      (when (fboundp 'defmethod)
         ;; bug #22840
-        (defmethod clone ((obj eieio-named) &rest params)
-          "Clone OBJ, initializing `:parent' to OBJ.
+      (defmethod clone ((obj eieio-named) &rest params)
+        "Clone OBJ, initializing `:parent' to OBJ.
         All slots are unbound, except those initialized with
         PARAMS."
-          (let* ((newname (and (stringp (car params)) (pop params)))
-                 (nobj (apply #'call-next-method obj params))
-                 (nm (slot-value obj 'object-name)))
-            (eieio-oset nobj 'object-name
-                        (or newname
-                            (save-match-data
-                              (if (and nm (string-match "-\\([0-9]+\\)" nm))
-                                  (let ((num (1+ (string-to-number
-                                                  (match-string 1 nm)))))
-                                    (concat (substring nm 0 (match-beginning 0))
-                                            "-" (int-to-string num)))
-                                (concat nm "-1")))))
-            nobj))))
+        (let* ((newname (and (stringp (car params)) (pop params)))
+               (nobj (apply #'call-next-method obj params))
+               (nm (slot-value obj 'object-name)))
+          (eieio-oset nobj 'object-name
+                      (or newname
+                          (save-match-data
+                            (if (and nm (string-match "-\\([0-9]+\\)" nm))
+                                (let ((num (1+ (string-to-number
+                                                (match-string 1 nm)))))
+                                  (concat (substring nm 0 (match-beginning 0))
+                                          "-" (int-to-string num)))
+                              (concat nm "-1")))))
+          nobj)))
 
   (defclass pm-root (eieio-instance-inheritor)
     ((-props

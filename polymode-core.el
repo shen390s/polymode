@@ -484,7 +484,8 @@ able to accept user interaction."
     (with-current-buffer buffer
       (setq-local default-directory dd)
       (read-only-mode -1)
-      (erase-buffer)
+      ;;(erase-buffer)
+      (message message)
       (insert message)
       (comint-exec buffer buff-name shell-file-name nil
                    (list shell-command-switch command))
